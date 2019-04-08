@@ -1,0 +1,27 @@
+{
+  "name": "fullstackopen2019_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo 'not implemented yet'",
+    "watch": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tommi-GH/fullstackopen2019_backend.git"
+  },
+  "author": "Tommi Tiira",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tommi-GH/fullstackopen2019_backend/issues"
+  },
+  "homepage": "https://github.com/Tommi-GH/fullstackopen2019_backend#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
