@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
-morgan.token('body', function (req, res) { if(req.method == 'POST') return JSON.stringify(req.body) })
+morgan.token('body', function (req, res) { if(req.method === 'POST') return JSON.stringify(req.body) })
 
 let persons = require('./persons.json').persons
 
@@ -52,7 +52,7 @@ app.post('/api/persons', (req, res) => {
         return
     }
     
-    if (persons.find(existingPerson => existingPerson.name.localeCompare(newPerson.name) === 0)){
+    if (persons.find(existingPerson => existingPerson.name === newPerson.name)){
         res.status(403).send({ error: 'name already in use' })
         return
     }
