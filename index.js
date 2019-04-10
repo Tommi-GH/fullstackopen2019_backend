@@ -17,7 +17,7 @@ app.use(express.static('build'))
 
 app.get('/', (req, res) => {
     res.send(
-        '<h1>Hello world</h1>'
+        '<p>Something went wrong :( </p>'
     )
 })
 
@@ -75,7 +75,7 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 
-const PORT = 3001
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
