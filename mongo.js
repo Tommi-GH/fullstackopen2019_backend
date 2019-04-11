@@ -42,7 +42,7 @@ Person.find({}).then(result => {
     process.exit(1)
 })
 } else {
-    console.log('The program takes exactly one, or three arguments.\n'+
+    console.log('This program takes exactly one, or three arguments.\n'+
     'Just password for listing existing entries.\n'+
     'Password, name and phonenumber for adding new entries')
     process.exit(1)
