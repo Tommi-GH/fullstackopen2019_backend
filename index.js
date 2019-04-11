@@ -1,14 +1,18 @@
 
-
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
 
-let persons = require('./persons.json').persons
+const Person = require('./models/person')
 
-morgan.token('body', function (req, res) { if(req.method === 'POST') return JSON.stringify(req.body) })
+morgan.token('body', function (req, res) {
+    if (req.method === 'POST') {
+        return JSON.stringify(req.body)
+    }
+})
 
 app.use(bodyParser.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
@@ -23,59 +27,95 @@ app.get('/', (req, res) => {
 
 
 app.get('/info', (req, res) => {
-    res.send(
-        '<p>Puhelinluettelossa ' + persons.length + ' henkilöä</p>' +
-        '<p>' + Date(Date.now()) + '</p>'
-
-    )
+    Person.find({}).then(persons => {
+        res.send(
+            '<p>Puhelinluettelossa ' + persons.length + ' henkilöä</p>' +
+            '<p>' + Date(Date.now()) + '</p>'
+    
+        )
+    })
 })
 
 
 app.get('/api/persons', (req, res) => {
-    res.send(persons)
+    Person.find({}).then(persons => {
+        res.json(persons.map(person => person.toJSON()))
+    })
 })
 
 
-app.get('/api/persons/:id', (req, res) => {
-    const person = persons.find(person => person.id === Number(req.params.id))
 
-    if (person) {
-        res.send(person)
-    } else {
-        res.sendStatus(404)
-    }
-
+app.get('/api/persons/:id', (req, res, next) => {
+    Person.findById(req.params.id).then(person => {
+        if (person) {
+            res.json(person.toJSON())
+        } else {
+            res.status(204).end()
+        }
+    })
+        .catch(error => next(error))
 })
 
 /**Add person to memory list if request body has name and phone and neither are already in the list */
 app.post('/api/persons', (req, res) => {
-    const newPerson = req.body
+    const body = req.body
 
-    if (!newPerson.name || !newPerson.phone) {
-        res.status(403).send({ error: 'name and phonenumber are required' })
-        return
-    }
-    
-    if (persons.find(existingPerson => existingPerson.name === newPerson.name)){
-        res.status(403).send({ error: 'name already in use' })
-        return
+    console.log(body)
+
+    if (body === undefined) {
+        return res.status(400).json({ error: 'content missing' })
     }
 
-    newPerson.id = Math.floor(Math.random() * 10000)
-    persons = persons.concat(newPerson)
-    res.send(newPerson)
+    const person = new Person({
+        name: body.name,
+        phone: body.phone
+    })
+
+    person.save().then(savedPerson => {
+        res.json(savedPerson.toJSON())
+    })
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body
+
+    const person = {
+        name: body.name,
+        phone: body.phone
+    }
+
+    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+        .then(updatedPerson => {
+            res.json(updatedPerson.toJSON())
+        })
+        .catch(error => next(error))
 })
 
 /**Remove person from memory */
-app.delete('/api/persons/:id', (req, res) => {
-    persons = persons.filter(person => person.id !== Number(req.params.id))
-
-    res.sendStatus(204)
+app.delete('/api/persons/:id', (req, res, next) => {
+    Person.findByIdAndRemove(req.params.id)
+        .then(result => {
+            res.status(204).end()
+        })
+        .catch(error => next(error))
 
 })
 
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+
+
+const errorHandler = (error, req, res, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError' && error.kind == 'ObjectId') {
+        return res.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
