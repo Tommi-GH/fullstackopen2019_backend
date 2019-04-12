@@ -3,17 +3,17 @@ var uniqueValidator = require('mongoose-unique-validator')
 const url = process.env.MONGODB_URI
 
 mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
 
-console.log('connecting to', url)
-
-mongoose.connect(url, { useNewUrlParser: true })
-    .then(result => {
-        console.log('connected to MongoDB')
-    })
-    .catch((error) => {
-        console.log('error connecting to MongoDB:', error.message)
-    })
-
+if (process.env.NODE_ENV === 'production') {
+    mongoose.connect(url)
+        .then(console.log('connected to mongodb'))
+        .catch(error => console.log(error))
+} else {
+    mongoose.connect(url, { useNewUrlParser: true })
+        .then(console.log('connected to mongodb'))
+        .catch(error => console.log(error))
+}
 const personSchema = new mongoose.Schema({
     name: {
         type: String,

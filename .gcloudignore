@@ -13,5 +13,14 @@
 .git
 .gitignore
 
+#unnecessary files
+.eslintignore
+.eslintrc.js
+.env
+readme.md
+
 # Node.js dependencies:
 node_modules/
+
+#misc dev files
+misc/
