@@ -26,24 +26,24 @@ if (process.argv.length === 5) {
         phone: process.argv[4],
     })
 
-    console.log(`Lisätään ${person.name} numero ${person.phone} luetteloon`);
+    console.log(`Lisätään ${person.name} numero ${person.phone} luetteloon`)
 
     person.save().then(response => {
-        mongoose.connection.close();
+        mongoose.connection.close()
         process.exit(1)
     })
 } else if (process.argv.length === 3) {
-Person.find({}).then(result => {
-    console.log('Puhelinluettelo:')
-    result.forEach(person => {
-        console.log(person.name+' '+person.phone)
+    Person.find({}).then(result => {
+        console.log('Puhelinluettelo:')
+        result.forEach(person => {
+            console.log(person.name + ' ' + person.phone)
+        })
+        mongoose.connection.close()
+        process.exit(1)
     })
-    mongoose.connection.close()
-    process.exit(1)
-})
 } else {
-    console.log('This program takes exactly one, or three arguments.\n'+
-    'Just password for listing existing entries.\n'+
-    'Password, name and phonenumber for adding new entries')
+    console.log('This program takes exactly one, or three arguments.\n' +
+        'Just password for listing existing entries.\n' +
+        'Password, name and phonenumber for adding new entries')
     process.exit(1)
 }

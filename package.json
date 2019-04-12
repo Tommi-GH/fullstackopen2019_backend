@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "echo 'not implemented yet'",
-    "watch": "nodemon index.js"
+    "watch": "nodemon index.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,8 @@
   },
   "homepage": "https://github.com/Tommi-GH/fullstackopen2019_backend#readme",
   "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.12.4",
     "nodemon": "^1.18.10"
   },
   "dependencies": {
@@ -26,6 +29,7 @@
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "mongoose": "^5.5.0",
+    "mongoose-unique-validator": "^2.0.2",
     "morgan": "^1.9.1"
   }
 }

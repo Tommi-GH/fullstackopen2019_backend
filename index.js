@@ -1,5 +1,7 @@
 
-require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config()
+}
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -31,7 +33,7 @@ app.get('/info', (req, res) => {
         res.send(
             '<p>Puhelinluettelossa ' + persons.length + ' henkilöä</p>' +
             '<p>' + Date(Date.now()) + '</p>'
-    
+
         )
     })
 })
@@ -56,8 +58,9 @@ app.get('/api/persons/:id', (req, res, next) => {
         .catch(error => next(error))
 })
 
+
 /**Add person to memory list if request body has name and phone and neither are already in the list */
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
 
     console.log(body)
@@ -71,9 +74,11 @@ app.post('/api/persons', (req, res) => {
         phone: body.phone
     })
 
-    person.save().then(savedPerson => {
-        res.json(savedPerson.toJSON())
-    })
+    person.save().then(savedPerson => savedPerson.toJSON())
+        .then(savedFormattedPerson => {
+            res.json(savedFormattedPerson)
+        })
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -102,7 +107,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 })
 
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
@@ -111,8 +116,10 @@ app.listen(PORT, () => {
 const errorHandler = (error, req, res, next) => {
     console.error(error.message)
 
-    if (error.name === 'CastError' && error.kind == 'ObjectId') {
+    if (error.name === 'CastError' && error.kind === 'ObjectId') {
         return res.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return res.status(400).json({ error: error.message })
     }
 
     next(error)
