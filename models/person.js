@@ -5,6 +5,8 @@ const url = process.env.MONGODB_URI
 mongoose.set('useFindAndModify', false)
 mongoose.set('useCreateIndex', true)
 
+console.log('connecting to ', url)
+
 if (process.env.NODE_ENV === 'production') {
     mongoose.connect(url)
         .then(console.log('connected to mongodb'))
